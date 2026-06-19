@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Şin Anbarı</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f5f5f5;
+  --bg2: #fff;
+  --bg3: #f0f0f0;
+  --text: #1a1a1a;
+  --text2: #666;
+  --border: #e0e0e0;
+  --accent: #E8FF47;
+  --dark: #1a1a1a;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --green-bg: #dcfce7;
+  --red-bg: #fee2e2;
+  --amber-bg: #fef3c7;
+  --sidebar-w: 210px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; background: var(--bg); color: var(--text); }
+
+/* LOGIN */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; background: var(--dark); }
+.login-card { background: #fff; border-radius: 16px; padding: 2rem; width: 100%; max-width: 340px; }
+.login-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 1.5rem; }
+.login-logo-icon { width: 44px; height: 44px; background: var(--dark); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 22px; }
+.login-logo-text { font-size: 20px; font-weight: 600; }
+.roles { display: flex; gap: 8px; margin-bottom: 1.2rem; }
+.role-btn { flex: 1; padding: 9px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg3); cursor: pointer; font-size: 13px; color: var(--text2); text-align: center; transition: all .15s; }
+.role-btn.active { border-color: var(--dark); background: var(--dark); color: var(--accent); font-weight: 500; }
+.hint { text-align: center; font-size: 11px; color: var(--text2); margin-bottom: 12px; }
+label.lbl { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; margin-top: 12px; }
+.inp { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: var(--bg3); }
+.inp:focus { border-color: var(--dark); }
+.login-btn { width: 100%; margin-top: 16px; padding: 11px; background: var(--dark); color: var(--accent); border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.err { color: var(--red); font-size: 12px; margin-top: 8px; text-align: center; min-height: 18px; }
+
+/* LAYOUT */
+.app { display: flex; min-height: 100vh; }
+
+/* SIDEBAR desktop */
+.sidebar { width: var(--sidebar-w); background: var(--dark); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 50; transition: transform .25s; }
+.sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 1.1rem 1rem; border-bottom: 1px solid #2a2a2a; }
+.sl-icon { width: 30px; height: 30px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; color: var(--dark); font-size: 16px; }
+.sl-text { font-size: 14px; font-weight: 600; color: #fff; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 10px 1rem; cursor: pointer; color: #888; font-size: 13px; border-left: 2px solid transparent; transition: all .15s; text-decoration: none; }
+.nav-item:hover { color: #fff; background: #252525; }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: #252525; }
+.nav-item i { font-size: 17px; width: 20px; }
+.sb-bottom { margin-top: auto; border-top: 1px solid #2a2a2a; padding: 6px 0; }
+.user-info { padding: 6px 1rem; color: #555; font-size: 11px; }
+.logout { display: flex; align-items: center; gap: 9px; padding: 10px 1rem; cursor: pointer; color: #888; font-size: 13px; }
+.logout:hover { color: #fff; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 1.2rem; min-height: 100vh; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* TOPBAR mobile */
+.topbar { display: none; background: var(--dark); color: #fff; padding: 0.8rem 1rem; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--accent); }
+.topbar-menu { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 2px 6px; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 45; }
+.overlay.show { display: block; }
+
+/* BOTTOM NAV mobile */
+.bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark); padding: 6px 0 env(safe-area-inset-bottom); z-index: 50; border-top: 1px solid #2a2a2a; }
+.bn-items { display: flex; }
+.bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; cursor: pointer; color: #666; font-size: 10px; border: none; background: none; }
+.bn-item i { font-size: 20px; }
+.bn-item.active { color: var(--accent); }
+
+/* PAGE HEADER */
+.ph { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+.ph-title { font-size: 17px; font-weight: 600; }
+
+/* BUTTONS */
+.btn { padding: 8px 14px; border-radius: 9px; font-size: 13px; cursor: pointer; border: 1.5px solid var(--border); background: #fff; color: var(--text); font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+.btn:hover { background: var(--bg3); }
+.btn-primary { background: var(--dark); color: var(--accent); border-color: var(--dark); }
+.btn-primary:hover { background: #333; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* METRICS */
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.metric { background: #fff; border-radius: 12px; padding: 1rem; border: 1px solid var(--border); }
+.metric-lbl { font-size: 11px; color: var(--text2); margin-bottom: 6px; }
+.metric-val { font-size: 22px; font-weight: 700; }
+.green { color: var(--green); }
+.red { color: var(--red); }
+.amber { color: var(--amber); }
+
+/* CARD */
+.card { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 1rem; }
+.card-head { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 600; }
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); border-bottom: 1px solid var(--border); white-space: nowrap; background: #fafafa; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; }
+
+/* BADGES */
+.badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.bg { background: var(--green-bg); color: var(--green); }
+.br { background: var(--red-bg); color: var(--red); }
+.ba { background: var(--amber-bg); color: var(--amber); }
+.bw { background: #f3f3f3; color: #666; }
+
+/* ALERT */
+.alert { padding: 9px 12px; border-radius: 9px; font-size: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+.alert-warn { background: var(--amber-bg); color: #92400e; border: 1px solid #fde68a; }
+
+/* SEARCH */
+.search-wrap { margin-bottom: 1rem; }
+.search-inp { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; outline: none; background: #fff; }
+.search-inp:focus { border-color: var(--dark); }
+
+/* MODAL */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 200; padding: 0; }
+@media (min-width: 600px) { .modal-bg { align-items: center; padding: 1rem; } }
+.modal { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 460px; padding: 1.5rem; max-height: 92vh; overflow-y: auto; }
+@media (min-width: 600px) { .modal { border-radius: 16px; } }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 1.2rem; }
+.fr { margin-bottom: 12px; }
+.fl { font-size: 12px; color: var(--text2); margin-bottom: 5px; display: block; }
+.fi { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; background: #fafafa; outline: none; color: var(--text); }
+.fi:focus { border-color: var(--dark); background: #fff; }
+.fr2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.mf { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.2rem; }
+
+/* LOADING */
+.loading { display: flex; align-items: center; justify-content: center; padding: 2rem; color: var(--text2); gap: 10px; font-size: 13px; }
+.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--dark); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* CHART */
+.chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding: 1rem; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar { width: 100%; background: var(--dark); border-radius: 4px 4px 0 0; min-height: 3px; }
+.bar-lbl { font-size: 10px; color: var(--text2); }
+.bar-v { font-size: 10px; font-weight: 600; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 0.8rem; padding-bottom: 80px; }
+  .topbar { display: flex; }
+  .bottom-nav { display: block; }
+  .ph-title { font-size: 15px; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .metric-val { font-size: 18px; }
+  table { min-width: 420px; }
+  .btn { padding: 8px 12px; font-size: 12px; }
+}
+@media (max-width: 400px) {
+  .metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fr2 { grid-template-columns: 1fr; }
+}
+
+/* TOAST */
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; }
+@media (min-width: 769px) { .toast { bottom: 20px; } }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon"><i class="ti ti-steering-wheel"></i></div>
+      <span class="login-logo-text">Şin Anbarı</span>
+    </div>
+    <div class="roles">
+      <div class="role-btn active" id="roleOwner" onclick="setRole('owner')">👑 Sahib</div>
+      <div class="role-btn" id="roleStaff" onclick="setRole('staff')">👤 İşçi</div>
+    </div>
+    <div class="hint" id="loginHint">Sahib şifrəsi: <b>owner123</b></div>
+    <label class="lbl">Şifrə / Пароль</label>
+    <input class="inp" type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="err" id="loginErr"></div>
+    <button class="login-btn" onclick="doLogin()">Daxil ol →</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none;">
+
+  <!-- Mobile topbar -->
+  <div class="topbar">
+    <span class="topbar-title">🛞 Şin Anbarı</span>
+    <button class="topbar-menu" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+  </div>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="sl-icon"><i class="ti ti-steering-wheel"></i></div>
+        <span class="sl-text">Şin Anbarı</span>
+      </div>
+      <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><i class="ti ti-layout-dashboard"></i> Ana səhifə</div>
+      <div class="nav-item" onclick="showPage('warehouse')" id="nav-warehouse"><i class="ti ti-packages"></i> Anbar</div>
+      <div class="nav-item" onclick="showPage('sales')" id="nav-sales"><i class="ti ti-receipt"></i> Satışlar</div>
+      <div class="nav-item" onclick="showPage('debts')" id="nav-debts"><i class="ti ti-credit-card"></i> Borclar</div>
+      <div class="nav-item" onclick="showPage('reports')" id="nav-reports" style="display:none"><i class="ti ti-chart-bar"></i> Hesabatlar</div>
+      <div class="sb-bottom">
+        <div class="user-info" id="userInfo"></div>
+        <div class="logout" onclick="doLogout()"><i class="ti ti-logout"></i> Çıxış</div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="ph"><span class="ph-title">Ana səhifə</span><span style="font-size:11px;color:var(--text2)" id="dash-date"></span></div>
+        <div class="metrics" id="dash-metrics"><div class="loading"><div class="spinner"></div> Yüklənir...</div></div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Son satışlar</span></div>
+          <div class="tbl-wrap" id="dash-sales"></div>
+        </div>
+      </div>
+
+      <!-- WAREHOUSE -->
+      <div class="page" id="page-warehouse">
+        <div class="ph">
+          <span class="ph-title">Anbar</span>
+          <div class="btn-group">
+            <button class="btn" onclick="openModal('modalIncome')"><i class="ti ti-arrow-down"></i> Gəliş</button>
+            <button class="btn btn-primary" onclick="openModal('modalOutcome')"><i class="ti ti-arrow-up"></i> Xərc</button>
+          </div>
+        </div>
+        <div id="wh-alert"></div>
+        <div class="search-wrap"><input class="search-inp" id="wh-search" placeholder="Axtarış..." oninput="renderWarehouse()"></div>
+        <div class="card"><div class="tbl-wrap" id="wh-table"><div class="loading"><div class="spinner"></div> Yüklənir...</div></div></div>
+      </div>
+
+      <!-- SALES -->
+      <div class="page" id="page-sales">
+        <div class="ph">
+          <span class="ph-title">Satışlar</span>
+          <button class="btn btn-primary" onclick="openModal('modalSale')"><i class="ti ti-plus"></i> Yeni satış</button>
+        </div>
+        <div class="search-wrap"><input class="search-inp" id="sales-search" placeholder="Axtarış..." oninput="renderSales()"></div>
+        <div class="card"><div class="tbl-wrap" id="sales-table"><div class="loading"><div class="spinner"></div> Yüklənir...</div></div></div>
+      </div>
+
+      <!-- DEBTS -->
+      <div class="page" id="page-debts">
+        <div class="ph">
+          <span class="ph-title">Borclar</span>
+          <button class="btn btn-primary" onclick="openModal('modalDebt')"><i class="ti ti-plus"></i> Yeni borc</button>
+        </div>
+        <div class="metrics" id="debt-metrics"></div>
+        <div class="card"><div class="tbl-wrap" id="debts-table"><div class="loading"><div class="spinner"></div> Yüklənir...</div></div></div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="ph"><span class="ph-title">Hesabatlar / Отчёты</span></div>
+        <div class="metrics" id="rep-metrics"></div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Aylıq satışlar</span></div>
+          <div class="chart-bars" id="rep-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Top şinlər / Топ шин</span></div>
+          <div class="tbl-wrap" id="rep-top"></div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /app -->
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav">
+    <div class="bn-items">
+      <button class="bn-item active" id="bn-dashboard" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i><span>Ana səhifə</span></button>
+      <button class="bn-item" id="bn-warehouse" onclick="showPage('warehouse')"><i class="ti ti-packages"></i><span>Anbar</span></button>
+      <button class="bn-item" id="bn-sales" onclick="showPage('sales')"><i class="ti ti-receipt"></i><span>Satışlar</span></button>
+      <button class="bn-item" id="bn-debts" onclick="showPage('debts')"><i class="ti ti-credit-card"></i><span>Borclar</span></button>
+      <button class="bn-item" id="bn-reports" style="display:none" onclick="showPage('reports')"><i class="ti ti-chart-bar"></i><span>Hesabat</span></button>
+    </div>
+  </nav>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODALS -->
+<div id="modalIncome" class="modal-bg" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Mal gəlişi / Приход</div>
+    <div class="fr"><label class="fl">Şin adı</label><input class="fi" id="in-name" placeholder="185/65 R15 Pirelli"></div>
+    <div class="fr2">
+      <div><label class="fl">Miqdar</label><input class="fi" id="in-qty" type="number" min="1" value="4"></div>
+      <div><label class="fl" id="in-cost-lbl">Maya (₼)</label><input class="fi" id="in-cost" type="number" min="0" value="0"></div>
+    </div>
+    <div class="fr"><label class="fl">Ölçü</label><input class="fi" id="in-size" placeholder="185/65 R15"></div>
+    <div class="fr"><label class="fl">Təchizatçı</label><input class="fi" id="in-supplier" placeholder="Alibaba..."></div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalIncome')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="addIncome()">Saxla</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalOutcome" class="modal-bg" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Mal xərci / Расход</div>
+    <div class="fr"><label class="fl">Şin seçin</label><select class="fi" id="out-tire"></select></div>
+    <div class="fr2">
+      <div><label class="fl">Miqdar</label><input class="fi" id="out-qty" type="number" min="1" value="1"></div>
+      <div><label class="fl">Səbəb</label>
+        <select class="fi" id="out-reason">
+          <option>Zay / Брак</option><option>İadə / Возврат</option><option>Digər</option>
+        </select>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalOutcome')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="addOutcome()">Saxla</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalSale" class="modal-bg" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Yeni satış / Новая продажа</div>
+    <div class="fr"><label class="fl">Şin seçin</label><select class="fi" id="sale-tire" onchange="onTireChange()"></select></div>
+    <div class="fr2">
+      <div><label class="fl">Miqdar</label><input class="fi" id="sale-qty" type="number" min="1" value="1" oninput="calcTotal()"></div>
+      <div>
+        <label class="fl">Satış qiyməti (₼) <span id="cost-hint" style="color:var(--amber);font-size:10px;"></span></label>
+        <input class="fi" id="sale-price" type="number" min="0" placeholder="0.00" oninput="calcTotal()">
+      </div>
+    </div>
+    <div class="fr"><label class="fl">Müştəri adı</label><input class="fi" id="sale-client" placeholder="Ad Soyad"></div>
+    <div class="fr2">
+      <div><label class="fl">Ödəniş növü</label>
+        <select class="fi" id="sale-pay">
+          <option value="Nağd">Nağd / Наличные</option>
+          <option value="Kart">Kart / Карта</option>
+          <option value="Borc">Borc / В долг</option>
+        </select>
+      </div>
+      <div><label class="fl">Cəmi (₼)</label><input class="fi" id="sale-total" readonly style="background:#f5f5f5;font-weight:700;"></div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalSale')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="addSale()">Satış et</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalDebt" class="modal-bg" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Yeni borc / Новый долг</div>
+    <div class="fr"><label class="fl">Müştəri adı</label><input class="fi" id="debt-client" placeholder="Ad Soyad"></div>
+    <div class="fr"><label class="fl">Telefon</label><input class="fi" id="debt-phone" placeholder="+994 50 ..."></div>
+    <div class="fr2">
+      <div><label class="fl">Məbləğ (₼)</label><input class="fi" id="debt-amount" type="number" min="0"></div>
+      <div><label class="fl">Son tarix</label><input class="fi" id="debt-due" type="date"></div>
+    </div>
+    <div class="fr"><label class="fl">Qeyd</label><input class="fi" id="debt-note" placeholder="..."></div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalDebt')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="addDebt()">Saxla</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalPayDebt" class="modal-bg" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Borc ödəmək</div>
+    <div class="fr"><label class="fl">Ödəniş məbləği (₼)</label><input class="fi" id="pay-amount" type="number" min="0" placeholder="0.00"></div>
+    <input type="hidden" id="pay-debt-id">
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalPayDebt')">Ləğv et</button>
+      <button class="btn btn-primary" onclick="payDebt()">Ödə</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+import {
+  getFirestore, collection, doc,
+  addDoc, updateDoc, deleteDoc,
+  onSnapshot, query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+// ─── FIREBASE CONFIG ────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDXVLrzcZiyX4tkxo6EV8NM7-FFgP3WJ4w",
+  authDomain: "shin-anbar.firebaseapp.com",
+  projectId: "shin-anbar",
+  storageBucket: "shin-anbar.firebasestorage.app",
+  messagingSenderId: "72974243704B",
+  appId: "1:729742437040:web:3d6fc480efd569c907e975",
+  measurementId: "G-F1MCXHFVHD"
+};
+// ────────────────────────────────────────────────────────────────
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// State
+let stock = [], sales = [], debts = [];
+let currentRole = 'owner';
+let selectedRole = 'owner';
+
+// ── AUTH ──
+window.setRole = (r) => {
+  selectedRole = r;
+  document.getElementById('roleOwner').className = 'role-btn' + (r==='owner'?' active':'');
+  document.getElementById('roleStaff').className = 'role-btn' + (r==='staff'?' active':'');
+  document.getElementById('loginHint').innerHTML = r==='owner'
+    ? 'Sahib şifrəsi: <b>owner123</b>'
+    : 'İşçi şifrəsi: <b>staff123</b>';
+};
+
+window.doLogin = () => {
+  const pw = document.getElementById('pwInput').value;
+  const err = document.getElementById('loginErr');
+  if (selectedRole==='owner' && pw==='owner123') { currentRole='owner'; startApp(); }
+  else if (selectedRole==='staff' && pw==='staff123') { currentRole='staff'; startApp(); }
+  else { err.textContent = 'Yanlış şifrə / Неверный пароль'; }
+};
+
+window.doLogout = () => {
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('mainApp').style.display='none';
+  document.getElementById('pwInput').value='';
+  document.getElementById('loginErr').textContent='';
+  closeSidebar();
+};
+
+function startApp() {
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('az-AZ');
+  if (currentRole==='owner') {
+    document.getElementById('nav-reports').style.display='flex';
+    document.getElementById('bn-reports').style.display='flex';
+    document.getElementById('userInfo').innerHTML = '👑 Sahib (RU)';
+  } else {
+    document.getElementById('userInfo').innerHTML = '👤 İşçi';
+  }
+  // Hide cost fields from staff in income modal
+  if (currentRole==='staff') {
+    document.getElementById('in-cost-lbl').style.display='none';
+    document.getElementById('in-cost').style.display='none';
+  }
+  subscribeAll();
+}
+
+// ── FIRESTORE SUBSCRIPTIONS ──
+function subscribeAll() {
+  // Stock
+  onSnapshot(query(collection(db,'stock'), orderBy('name')), snap => {
+    stock = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderWarehouse(); renderDashboard();
+  });
+  // Sales
+  onSnapshot(query(collection(db,'sales'), orderBy('createdAt','desc')), snap => {
+    sales = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderSales(); renderDashboard();
+    if (currentRole==='owner') renderReports();
+  });
+  // Debts
+  onSnapshot(query(collection(db,'debts'), orderBy('createdAt','desc')), snap => {
+    debts = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderDebts(); renderDashboard();
+  });
+}
+
+// ── NAVIGATION ──
+window.showPage = (p) => {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p).classList.add('active');
+  const bn = document.getElementById('bn-'+p);
+  if (bn) bn.classList.add('active');
+  closeSidebar();
+  document.querySelector('.topbar-title').textContent = {
+    dashboard:'🛞 Şin Anbarı', warehouse:'📦 Anbar',
+    sales:'🧾 Satışlar', debts:'💳 Borclar', reports:'📊 Hesabatlar'
+  }[p] || 'Şin Anbarı';
+};
+
+// ── SIDEBAR MOBILE ──
+window.toggleSidebar = () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+};
+window.closeSidebar = () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+};
+
+// ── MODALS ──
+window.openModal = (id) => {
+  if (id==='modalOutcome'||id==='modalSale') fillTireSelect(id);
+  document.getElementById(id).style.display='flex';
+};
+window.closeModal = (id) => { document.getElementById(id).style.display='none'; };
+
+function fillTireSelect(modalId) {
+  const sel = modalId==='modalOutcome' ? 'out-tire' : 'sale-tire';
+  const el = document.getElementById(sel);
+  const inStock = stock.filter(t=>t.qty>0);
+  el.innerHTML = inStock.length
+    ? inStock.map(t=>`<option value="${t.id}">${t.name} (${t.qty} ədəd)</option>`).join('')
+    : '<option>Anbar boşdur</option>';
+  if (modalId==='modalSale') onTireChange();
+}
+
+window.onTireChange = () => {
+  const id = document.getElementById('sale-tire').value;
+  const t = stock.find(s=>s.id===id);
+  if (!t) return;
+  if (currentRole==='owner') {
+    document.getElementById('cost-hint').textContent = `maya: ${t.cost||0} ₼`;
+  }
+  document.getElementById('sale-price').value='';
+  document.getElementById('sale-total').value='';
+};
+
+window.calcTotal = () => {
+  const qty = parseFloat(document.getElementById('sale-qty').value)||0;
+  const price = parseFloat(document.getElementById('sale-price').value)||0;
+  document.getElementById('sale-total').value = qty&&price ? (qty*price).toFixed(2) : '';
+};
+
+// ── FIRESTORE OPERATIONS ──
+window.addIncome = async () => {
+  const name = document.getElementById('in-name').value.trim();
+  const qty = parseInt(document.getElementById('in-qty').value)||0;
+  const cost = parseFloat(document.getElementById('in-cost').value)||0;
+  const size = document.getElementById('in-size').value.trim();
+  const supplier = document.getElementById('in-supplier').value.trim();
+  if (!name||!qty) { toast('Ad və miqdar daxil edin'); return; }
+
+  const ex = stock.find(s=>s.name.toLowerCase()===name.toLowerCase());
+  if (ex) {
+    await updateDoc(doc(db,'stock',ex.id), { qty: ex.qty+qty });
+  } else {
+    await addDoc(collection(db,'stock'), { name, size, qty, cost, supplier, createdAt: serverTimestamp() });
+  }
+  await addDoc(collection(db,'movements'), { type:'Gəliş', tireName:name, qty, supplier, date:today(), createdAt: serverTimestamp() });
+  closeModal('modalIncome');
+  clearFields(['in-name','in-size','in-supplier']);
+  document.getElementById('in-qty').value=4;
+  document.getElementById('in-cost').value=0;
+  toast('✅ Mal əlavə edildi');
+};
+
+window.addOutcome = async () => {
+  const id = document.getElementById('out-tire').value;
+  const qty = parseInt(document.getElementById('out-qty').value)||0;
+  const reason = document.getElementById('out-reason').value;
+  const t = stock.find(s=>s.id===id);
+  if (!t||qty>t.qty) { toast('Stokda kifayət qədər mal yoxdur'); return; }
+  await updateDoc(doc(db,'stock',id), { qty: t.qty-qty });
+  await addDoc(collection(db,'movements'), { type:'Xərc', tireName:t.name, qty, reason, date:today(), createdAt: serverTimestamp() });
+  closeModal('modalOutcome');
+  toast('✅ Xərc qeyd edildi');
+};
+
+window.addSale = async () => {
+  const tireId = document.getElementById('sale-tire').value;
+  const qty = parseInt(document.getElementById('sale-qty').value)||0;
+  const price = parseFloat(document.getElementById('sale-price').value)||0;
+  const client = document.getElementById('sale-client').value.trim()||'Naməlum';
+  const pay = document.getElementById('sale-pay').value;
+  const t = stock.find(s=>s.id===tireId);
+  if (!t) { toast('Şin seçin'); return; }
+  if (!price) { toast('Qiymət daxil edin'); return; }
+  if (qty>t.qty) { toast('Stokda kifayət qədər mal yoxdur'); return; }
+  const total = qty*price;
+  await updateDoc(doc(db,'stock',tireId), { qty: t.qty-qty });
+  await addDoc(collection(db,'sales'), { tire:t.name, qty, price, client, pay, total, date:today(), createdAt: serverTimestamp() });
+  if (pay==='Borc') {
+    await addDoc(collection(db,'debts'), { client, phone:'', amount:total, paid:0, due:'', note:t.name, active:true, createdAt: serverTimestamp() });
+  }
+  closeModal('modalSale');
+  clearFields(['sale-client']);
+  document.getElementById('sale-qty').value=1;
+  document.getElementById('sale-price').value='';
+  document.getElementById('sale-total').value='';
+  toast('✅ Satış qeyd edildi');
+};
+
+window.addDebt = async () => {
+  const client = document.getElementById('debt-client').value.trim();
+  const phone = document.getElementById('debt-phone').value.trim();
+  const amount = parseFloat(document.getElementById('debt-amount').value)||0;
+  const due = document.getElementById('debt-due').value;
+  const note = document.getElementById('debt-note').value.trim();
+  if (!client||!amount) { toast('Ad və məbləğ daxil edin'); return; }
+  await addDoc(collection(db,'debts'), { client, phone, amount, paid:0, due, note, active:true, createdAt: serverTimestamp() });
+  closeModal('modalDebt');
+  clearFields(['debt-client','debt-phone','debt-amount','debt-due','debt-note']);
+  toast('✅ Borc əlavə edildi');
+};
+
+window.openPayDebt = (id) => {
+  document.getElementById('pay-debt-id').value=id;
+  document.getElementById('pay-amount').value='';
+  openModal('modalPayDebt');
+};
+
+window.payDebt = async () => {
+  const id = document.getElementById('pay-debt-id').value;
+  const amount = parseFloat(document.getElementById('pay-amount').value)||0;
+  const d = debts.find(x=>x.id===id);
+  if (!d) return;
+  const newPaid = Math.min(d.paid+amount, d.amount);
+  const active = newPaid < d.amount;
+  await updateDoc(doc(db,'debts',id), { paid: newPaid, active });
+  closeModal('modalPayDebt');
+  toast('✅ Ödəniş qeyd edildi');
+};
+
+// ── RENDERS ──
+function renderDashboard() {
+  const totalSales = sales.reduce((s,x)=>s+x.total,0);
+  const totalDebt = debts.filter(d=>d.active).reduce((s,d)=>s+(d.amount-d.paid),0);
+  const totalStock = stock.reduce((s,t)=>s+t.qty,0);
+  const lowCount = stock.filter(t=>t.qty>0&&t.qty<5).length;
+  const isOwner = currentRole==='owner';
+  document.getElementById('dash-metrics').innerHTML = `
+    <div class="metric"><div class="metric-lbl">${isOwner?'Ümumi satış (₼)':'Bugünkü satışlar'}</div><div class="metric-val green">${isOwner?fmt(totalSales)+' ₼':sales.filter(s=>s.date===today()).length}</div></div>
+    <div class="metric"><div class="metric-lbl">Anbarda</div><div class="metric-val">${totalStock}</div></div>
+    <div class="metric"><div class="metric-lbl">${isOwner?'Aktiv borclar (₼)':'Aktiv borclar'}</div><div class="metric-val red">${isOwner?fmt(totalDebt)+' ₼':debts.filter(d=>d.active).length+' nəf.'}</div></div>
+    <div class="metric"><div class="metric-lbl">Az qalan növ</div><div class="metric-val amber">${lowCount}</div></div>
+  `;
+  const last5 = sales.slice(0,5);
+  document.getElementById('dash-sales').innerHTML = last5.length ? `<table>
+    <thead><tr><th>Müştəri</th><th>Şin</th><th>Tarix</th><th>Ödəniş</th>${isOwner?'<th>Cəmi</th>':''}</tr></thead>
+    <tbody>${last5.map(s=>`<tr>
+      <td><b>${s.client}</b></td>
+      <td style="color:var(--text2);font-size:12px">${s.tire}</td>
+      <td style="color:var(--text2)">${s.date}</td>
+      <td><span class="badge ${s.pay==='Nağd'?'bg':s.pay==='Kart'?'bw':'br'}">${s.pay}</span></td>
+      ${isOwner?`<td><b>${fmt(s.total)} ₼</b></td>`:''}
+    </tr>`).join('')}</tbody>
+  </table>` : '<div class="loading" style="color:var(--text2)">Hələ satış yoxdur</div>';
+}
+
+window.renderWarehouse = () => {
+  const q = (document.getElementById('wh-search').value||'').toLowerCase();
+  const filtered = stock.filter(t=>(t.name||'').toLowerCase().includes(q)||(t.size||'').toLowerCase().includes(q));
+  const lowItems = stock.filter(t=>t.qty>0&&t.qty<5);
+  document.getElementById('wh-alert').innerHTML = lowItems.length
+    ? `<div class="alert alert-warn"><i class="ti ti-alert-triangle"></i> Az qalan: ${lowItems.map(t=>t.name).join(', ')}</div>` : '';
+  const isOwner = currentRole==='owner';
+  document.getElementById('wh-table').innerHTML = `<table>
+    <thead><tr><th>Şin adı</th><th>Ölçü</th><th>Miqdar</th>${isOwner?'<th>Maya (₼)</th><th>Təchizatçı</th>':''}<th>Status</th></tr></thead>
+    <tbody>${filtered.map(t=>`<tr>
+      <td><b>${t.name}</b></td>
+      <td style="color:var(--text2)">${t.size||'—'}</td>
+      <td style="font-weight:700;color:${t.qty===0?'var(--red)':t.qty<5?'var(--amber)':'inherit'}">${t.qty}</td>
+      ${isOwner?`<td>${fmt(t.cost||0)} ₼</td><td style="color:var(--text2)">${t.supplier||'—'}</td>`:''}
+      <td><span class="badge ${t.qty===0?'br':t.qty<5?'ba':'bg'}">${t.qty===0?'Yoxdur':t.qty<5?'Az':'Var'}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+};
+
+window.renderSales = () => {
+  const q = (document.getElementById('sales-search').value||'').toLowerCase();
+  const filtered = sales.filter(s=>(s.client||'').toLowerCase().includes(q)||(s.tire||'').toLowerCase().includes(q));
+  const isOwner = currentRole==='owner';
+  document.getElementById('sales-table').innerHTML = `<table>
+    <thead><tr><th>Müştəri</th><th>Şin</th><th>Say</th><th>Qiymət</th><th>Cəmi</th><th>Ödəniş</th><th>Tarix</th></tr></thead>
+    <tbody>${filtered.map(s=>`<tr>
+      <td><b>${s.client}</b></td>
+      <td style="color:var(--text2);font-size:12px">${s.tire}</td>
+      <td>${s.qty}</td>
+      <td>${fmt(s.price)} ₼</td>
+      <td><b>${fmt(s.total)} ₼</b></td>
+      <td><span class="badge ${s.pay==='Nağd'?'bg':s.pay==='Kart'?'bw':'br'}">${s.pay}</span></td>
+      <td style="color:var(--text2)">${s.date}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+};
+
+function renderDebts() {
+  const totalOwed = debts.filter(d=>d.active).reduce((s,d)=>s+(d.amount-d.paid),0);
+  const overdueCount = debts.filter(d=>d.active&&d.due&&d.due<today()).length;
+  document.getElementById('debt-metrics').innerHTML = `
+    <div class="metric"><div class="metric-lbl">Ümumi borc</div><div class="metric-val red">${fmt(totalOwed)} ₼</div></div>
+    <div class="metric"><div class="metric-lbl">Aktiv müştəri</div><div class="metric-val">${debts.filter(d=>d.active).length}</div></div>
+    <div class="metric"><div class="metric-lbl">Vaxtı keçmiş</div><div class="metric-val amber">${overdueCount}</div></div>
+  `;
+  document.getElementById('debts-table').innerHTML = `<table>
+    <thead><tr><th>Müştəri</th><th>Telefon</th><th>Borc</th><th>Ödənib</th><th>Qalıq</th><th>Son tarix</th><th>Status</th><th></th></tr></thead>
+    <tbody>${debts.map(d=>{
+      const rem = d.amount-d.paid;
+      const overdue = d.active&&d.due&&d.due<today();
+      return `<tr>
+        <td><b>${d.client}</b></td>
+        <td style="font-size:12px;color:var(--text2)">${d.phone||'—'}</td>
+        <td>${fmt(d.amount)} ₼</td>
+        <td style="color:var(--green)">${fmt(d.paid)} ₼</td>
+        <td style="font-weight:700;color:${rem>0?'var(--red)':'var(--green)'}">${fmt(rem)} ₼</td>
+        <td style="color:${overdue?'var(--red)':'var(--text2)'};font-size:12px">${d.due||'—'}</td>
+        <td><span class="badge ${d.active?'br':'bg'}">${d.active?'Aktiv':'Ödənildi'}</span></td>
+        <td>${d.active?`<button class="btn btn-sm" onclick="openPayDebt('${d.id}')">Ödə</button>`:''}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function renderReports() {
+  const totalRev = sales.reduce((s,x)=>s+x.total,0);
+  const totalCost = sales.reduce((s,x)=>{const t=stock.find(st=>st.name===x.tire);return s+(t?(t.cost||0)*x.qty:0);},0);
+  const profit = totalRev-totalCost;
+  document.getElementById('rep-metrics').innerHTML = `
+    <div class="metric"><div class="metric-lbl">Ümumi gəlir / Выручка</div><div class="metric-val green">${fmt(totalRev)} ₼</div></div>
+    <div class="metric"><div class="metric-lbl">Xərc / Себестоимость</div><div class="metric-val red">${fmt(totalCost)} ₼</div></div>
+    <div class="metric"><div class="metric-lbl">Mənfəət / Прибыль</div><div class="metric-val" style="color:${profit>=0?'var(--green)':'var(--red)'}">${fmt(profit)} ₼</div></div>
+    <div class="metric"><div class="metric-lbl">Satış sayı</div><div class="metric-val">${sales.length}</div></div>
+  `;
+  // Sales by month from real data
+  const byMonth = {};
+  sales.forEach(s => {
+    const m = (s.date||'').slice(0,7);
+    if (m) byMonth[m] = (byMonth[m]||0) + s.total;
+  });
+  const months = Object.keys(byMonth).sort().slice(-6);
+  const vals = months.map(m=>byMonth[m]);
+  const maxV = Math.max(...vals, 1);
+  document.getElementById('rep-chart').innerHTML = months.length
+    ? months.map((m,i)=>`<div class="bar-col"><div class="bar-v">${fmt(vals[i])}</div><div class="bar" style="height:${Math.round(vals[i]/maxV*80)}px"></div><div class="bar-lbl">${m.slice(5)}</div></div>`).join('')
+    : '<div style="color:var(--text2);font-size:12px;padding:1rem">Məlumat yoxdur</div>';
+
+  const tireCount = {};
+  sales.forEach(s=>{tireCount[s.tire]=(tireCount[s.tire]||0)+s.qty;});
+  const sorted = Object.entries(tireCount).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('rep-top').innerHTML = sorted.length ? `<table>
+    <thead><tr><th>#</th><th>Şin</th><th>Satılan (ədəd)</th><th>Gəlir (₼)</th></tr></thead>
+    <tbody>${sorted.map(([name,qty],i)=>{
+      const rev=sales.filter(s=>s.tire===name).reduce((s,x)=>s+x.total,0);
+      return `<tr><td style="color:var(--text2)">${i+1}</td><td><b>${name}</b></td><td>${qty}</td><td>${fmt(rev)} ₼</td></tr>`;
+    }).join('')}</tbody>
+  </table>` : '<div class="loading" style="color:var(--text2)">Məlumat yoxdur</div>';
+}
+
+// ── HELPERS ──
+function today() { return new Date().toISOString().slice(0,10); }
+function fmt(n) { return Number(n||0).toLocaleString('az-AZ',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function clearFields(ids) { ids.forEach(id=>{document.getElementById(id).value='';}); }
+
+window.toast = (msg) => {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2500);
+};
+</script>
+</body>
+</html>
